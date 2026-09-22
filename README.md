@@ -10,6 +10,7 @@
 * Diego Alejandro Gomez Carmona
 * Danilo Jiménez Jaramillo
 * Juan David Guzmán Berrio
+* Juan Felipe Patiño Calderon
 * Julian David Agudelo Acevedo
 
 ## Descripción
