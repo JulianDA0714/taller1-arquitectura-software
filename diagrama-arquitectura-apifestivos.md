@@ -1,4 +1,4 @@
-```mermaid
+``` mermaid
 graph TD
 
     %% Cliente / Capa de Presentación Externa
@@ -15,12 +15,11 @@ graph TD
 
     %% Capa de Lógica de Negocio
     subgraph BusinessLayer [Capa de Lógica de Negocio]
-        Controllers[Controladores<br/><i>festivo.controlador.js</i>]
+        Controller[Controlador<br/><i>festivo.controlador.js</i>]
 
-        Operations[Operaciones API Festivos<br/><br/>
-        CRUD Festivos<br/>
-        Verificación de fecha festiva<br/>
-        Listado de festivos por año]
+        TipoService[Servicio de Tipos de Festivo<br/><i>tipoFestivo.servicio.js</i>]
+
+        FestivoService[Servicio de Festivos<br/><i>festivo.servicio.js</i><br/><br/>CRUD Festivos<br/>Verificación de fecha festiva<br/>Listado de festivos por año]
 
         DateService[Servicio de cálculo de fechas<br/><i>fecha.servicio.js</i>]
     end
@@ -35,26 +34,32 @@ graph TD
         DB[(Base de Datos - MongoDB<br/><i>festivos</i>)]
     end
 
-    %% Flujo principal de la petición
+    %% Flujo principal
     Client -->|1. Petición HTTP| Index
     Index -->|2. Delega a| Routes
     Routes -->|3. Valida datos| Validators
-    Validators -->|4. Pasa filtro| Controllers
-    Controllers -->|5. Ejecuta operación| Operations
+    Validators -->|4. Pasa filtro| Controller
+
+    %% Servicios de negocio
+    Controller -->|5. Operaciones de tipos| TipoService
+    Controller -->|6. Operaciones de festivos| FestivoService
+
+    %% Servicio auxiliar para cálculos
+    FestivoService -->|7. Solicita cálculo cuando se requiere| DateService
+    DateService -.->|8. Retorna fecha calculada| FestivoService
 
     %% Acceso a datos
-    Operations -->|6. Consulta / Modifica| Repository
-    Repository -->|7. Consulta / Modifica| DB
-
-    %% Cálculo de fechas cuando la operación lo requiere
-    Operations -->|Solicita cálculo cuando se requiere| DateService
-    DateService -.->|Retorna fecha calculada| Operations
+    TipoService -->|9. Consulta / Modifica| Repository
+    FestivoService -->|10. Consulta / Modifica| Repository
+    Repository -->|11. Consulta / Modifica| DB
 
     %% Flujo de respuesta
-    DB -.->|8. Retorna datos| Repository
-    Repository -.->|9. Retorna resultado| Operations
-    Operations -.->|10. Retorna resultado| Controllers
-    Controllers -.->|11. Respuesta JSON| Client
+    DB -.->|12. Retorna datos| Repository
+    Repository -.->|13. Retorna resultado| TipoService
+    Repository -.->|14. Retorna resultado| FestivoService
+    TipoService -.->|15. Retorna resultado| Controller
+    FestivoService -.->|16. Retorna resultado| Controller
+    Controller -.->|17. Respuesta JSON| Client
 
     %% Estilos de Nodos
     style ClientLayer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
