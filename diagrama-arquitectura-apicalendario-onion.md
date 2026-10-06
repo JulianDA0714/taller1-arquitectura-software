@@ -66,6 +66,4 @@ graph TD
     Controladores -->|Usa| DTOs
     Controladores -->|Usa| Entidades
 
-    %% Inicio de la aplicación
-    ApiApp -->|Inicia| Controladores
 ```
