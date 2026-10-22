@@ -16,3 +16,4 @@ classDiagram
     }
 
     Tipo "1" *-- "0..*" Festivo : festivos
+```

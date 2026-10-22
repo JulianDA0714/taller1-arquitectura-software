@@ -1,67 +1,80 @@
-``` mermaid
+
+# Diagrama de Arquitectura - API Festivos
+
+```mermaid
 graph TD
 
-    %% Cliente / Capa de Presentación Externa
-    subgraph ClientLayer [Capa de Cliente]
-        Client[Cliente Web / Móvil / Postman / Swagger UI]
+    %% Capa de Cliente
+    subgraph ClientLayer["Capa de Cliente"]
+        Client["Cliente Web / Móvil / Postman / Swagger UI"]
     end
 
-    %% Capa de Entrada y Enrutamiento
-    subgraph PresentationLayer [Capa de Presentación / API]
-        Index[index.js / app.js]
-        Routes[Rutas Express<br/><i>festivo.rutas.js</i>]
-        Validators[Middlewares / Validadores<br/><i>festivo.validador.js</i>]
+    %% Capa de Presentación
+    subgraph PresentationLayer["Capa de Presentación / API"]
+        Server["Inicio de aplicación<br/>server.js"]
+        App["Configuración de Express<br/>app.js"]
+        Routes["Rutas Express<br/>festivo.rutas.js"]
+        Validators["Validadores<br/>festivo.validador.js"]
+        Swagger["Documentación Swagger<br/>swagger.js"]
     end
 
     %% Capa de Lógica de Negocio
-    subgraph BusinessLayer [Capa de Lógica de Negocio]
-        Controller[Controlador<br/><i>festivo.controlador.js</i>]
+    subgraph BusinessLayer["Capa de Lógica de Negocio"]
+        Controller["Controlador<br/>festivo.controlador.js"]
 
-        TipoService[Servicio de Tipos de Festivo<br/><i>tipoFestivo.servicio.js</i>]
+        TipoService["Servicio de Tipos de Festivo<br/>tipoFestivo.servicio.js"]
 
-        FestivoService[Servicio de Festivos<br/><i>festivo.servicio.js</i><br/><br/>CRUD Festivos<br/>Verificación de fecha festiva<br/>Listado de festivos por año]
+        FestivoService["Servicio de Festivos<br/>festivo.servicio.js<br/><br/>CRUD de festivos<br/>Verificación de fechas<br/>Listado por año"]
 
-        DateService[Servicio de cálculo de fechas<br/><i>fecha.servicio.js</i>]
+        DateService["Servicio de Cálculo de Fechas<br/>fecha.servicio.js"]
     end
 
     %% Capa de Acceso a Datos
-    subgraph DataAccessLayer [Capa de Acceso a Datos]
-        Repository[Repositorio / Modelos<br/><i>festivo.repositorio.js</i>]
+    subgraph DataAccessLayer["Capa de Acceso a Datos"]
+        Repository["Repositorio de Festivos<br/>festivo.repositorio.js"]
+        Connection["Conexión MongoDB<br/>bd.js"]
     end
 
     %% Capa de Persistencia
-    subgraph PersistenceLayer [Capa de Persistencia]
-        DB[(Base de Datos - MongoDB<br/><i>festivos</i>)]
+    subgraph PersistenceLayer["Capa de Persistencia"]
+        DB[("MongoDB<br/>Base de datos: festivos<br/>Colección: tipos")]
     end
 
-    %% Flujo principal
-    Client -->|1. Petición HTTP| Index
-    Index -->|2. Delega a| Routes
-    Routes -->|3. Valida datos| Validators
-    Validators -->|4. Pasa filtro| Controller
+    %% Inicialización de la aplicación
+    Server -->|"1. Inicia aplicación"| App
+    App -->|"2. Establece conexión"| Connection
+    App -->|"3. Configura rutas"| Routes
+    App -->|"4. Configura Swagger"| Swagger
 
-    %% Servicios de negocio
-    Controller -->|5. Operaciones de tipos| TipoService
-    Controller -->|6. Operaciones de festivos| FestivoService
+    %% Peticiones HTTP
+    Client -->|"5. Petición HTTP"| Routes
+    Routes -->|"6. Valida datos"| Validators
+    Validators -->|"7. Solicitud válida"| Controller
 
-    %% Servicio auxiliar para cálculos
-    FestivoService -->|7. Solicita cálculo cuando se requiere| DateService
-    DateService -.->|8. Retorna fecha calculada| FestivoService
+    %% Lógica de negocio
+    Controller -->|"8. Operaciones de tipos"| TipoService
+    Controller -->|"9. Operaciones de festivos"| FestivoService
+
+    %% Cálculo de fechas
+    FestivoService -->|"10. Solicita cálculos"| DateService
+    DateService -.->|"11. Retorna fechas"| FestivoService
 
     %% Acceso a datos
-    TipoService -->|9. Consulta / Modifica| Repository
-    FestivoService -->|10. Consulta / Modifica| Repository
-    Repository -->|11. Consulta / Modifica| DB
+    TipoService -->|"12. Consulta / Modifica"| Repository
+    FestivoService -->|"13. Consulta / Modifica"| Repository
+    Repository -->|"14. Obtiene conexión"| Connection
+    Connection -->|"15. Consulta / Modifica"| DB
 
     %% Flujo de respuesta
-    DB -.->|12. Retorna datos| Repository
-    Repository -.->|13. Retorna resultado| TipoService
-    Repository -.->|14. Retorna resultado| FestivoService
-    TipoService -.->|15. Retorna resultado| Controller
-    FestivoService -.->|16. Retorna resultado| Controller
-    Controller -.->|17. Respuesta HTTP (JSON o texto plano)| Client
+    DB -.->|"16. Retorna datos"| Connection
+    Connection -.->|"17. Retorna resultado"| Repository
+    Repository -.->|"18. Retorna resultado"| TipoService
+    Repository -.->|"19. Retorna resultado"| FestivoService
+    TipoService -.->|"20. Retorna resultado"| Controller
+    FestivoService -.->|"21. Retorna resultado"| Controller
+    Controller -.->|"22. Respuesta HTTP (JSON o texto plano)"| Client
 
-    %% Estilos de Nodos
+    %% Estilos de las capas
     style ClientLayer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
     style PresentationLayer fill:#fff3e0,stroke:#f57c00,stroke-width:2px
     style BusinessLayer fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
