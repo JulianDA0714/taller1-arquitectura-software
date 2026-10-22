@@ -15,15 +15,18 @@ Este proyecto forma parte del taller de Arquitectura de Software II del Institut
 
 ## Arquitectura
 
-La aplicación utiliza una arquitectura por capas:
+La aplicación utiliza una arquitectura por capas, con separación de responsabilidades:
 
-- **Rutas:** definición de los endpoints.
-- **Controlador:** recepción de solicitudes y respuestas HTTP.
-- **Servicios:** lógica de negocio y cálculo de fechas.
-- **Repositorio:** operaciones sobre MongoDB.
-- **Modelo:** conexión a la base de datos.
-- **Validadores:** validación de los datos recibidos.
-- **Configuración:** conexión a MongoDB y documentación Swagger.
+- **Rutas:** definición de los endpoints de la API.
+- **Controlador:** recepción de solicitudes y generación de respuestas HTTP.
+- **Servicios:** lógica de negocio, gestión de tipos de festivos y cálculo de fechas.
+- **Repositorios:** operaciones sobre MongoDB y administración de la conexión a la base de datos.
+- **Validadores:** validación de los parámetros y datos recibidos.
+- **Configuración:** parámetros de conexión a MongoDB y documentación Swagger.
+
+Los componentes principales de la aplicación se organizan mediante clases, conservando la separación entre las distintas capas.
+
+El archivo `app.js` configura Express, los middlewares y las rutas, mientras que `server.js` inicia la aplicación y establece la conexión con MongoDB.
 
 Los festivos se almacenan en la base de datos `festivos`, dentro de la colección `tipos`.
 
@@ -31,12 +34,12 @@ Los festivos se almacenan en la base de datos `festivos`, dentro de la colecció
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| GET | `/festivos/tipos` | Consultar los tipos de festivo |
-| GET | `/festivos/:anio` | Consultar festivos de un año |
-| GET | `/festivos/verificar/:anio/:mes/:dia` | Verificar si una fecha es festiva |
-| POST | `/festivos/:idTipo` | Agregar un festivo |
-| PUT | `/festivos/:idTipo/:nombre` | Actualizar un festivo |
-| DELETE | `/festivos/:idTipo/:nombre` | Eliminar un festivo |
+| GET | `/api/festivos/tipos` | Consultar los tipos de festivo |
+| GET | `/api/festivos/:anio` | Consultar festivos de un año |
+| GET | `/api/festivos/verificar/:anio/:mes/:dia` | Verificar si una fecha es festiva |
+| POST | `/api/festivos/:idTipo` | Agregar un festivo |
+| PUT | `/api/festivos/:idTipo/:nombre` | Actualizar un festivo |
+| DELETE | `/api/festivos/:idTipo/:nombre` | Eliminar un festivo |
 
 ## Ejecución local
 
@@ -48,22 +51,32 @@ Desde la carpeta `api-festivos`, instalar las dependencias:
 npm install
 ```
 
-Iniciar la aplicación:
+Para iniciar la aplicación en modo desarrollo:
 
 ```bash
 npm run dev
 ```
 
+Para iniciar la aplicación normalmente:
+
+```bash
+npm start
+```
+
 La API estará disponible en:
 
-`http://localhost:3030`
+http://localhost:3030
 
 ## Documentación Swagger
 
 Los endpoints están documentados mediante Swagger y se pueden consultar desde:
 
-`http://localhost:3030/api-docs`
+http://localhost:3030/api-docs
 
 ## Estado
 
-La API Festivos se encuentra implementada. Se realizaron pruebas de consulta, verificación de fechas y operaciones de creación, actualización y eliminación sobre MongoDB.
+La API Festivos se encuentra implementada y organizada mediante una arquitectura por capas.
+
+Se realizaron pruebas de consulta, verificación de fechas, validación de datos y operaciones de creación, actualización y eliminación sobre MongoDB.
+
+También se verificó el funcionamiento de los endpoints y su documentación en Swagger después de la reorganización de la arquitectura.
