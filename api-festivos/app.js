@@ -1,28 +1,39 @@
 
 const express = require('express');
-const bd = require('./modelos/bd');
-
-const app = express();
-const puerto = 3030;
+const bd = require('./repositorios/bd');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./configuracion/swagger.config');
+const swaggerSpec = require('./configuracion/swagger');
 
-app.use(express.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+class App {
+    constructor() {
+        this.app = express();
+        this.puerto = 3030;
 
-require('./rutas/festivo.rutas')(app);
+        this.configurarMiddlewares();
+        this.configurarRutas();
+    }
 
-async function iniciarAplicacion() {
-    try {
-        await bd.conectar();
+    configurarMiddlewares() {
+        this.app.use(express.json());
+        this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    }
 
-        app.listen(puerto, () => {
-            console.log(`API Festivos iniciada en http://localhost:${puerto}`);
-        });
-    } catch (error) {
-        console.error('Error iniciando API Festivos:', error);
-        process.exit(1);
+    configurarRutas() {
+        require('./rutas/festivo.rutas')(this.app);
+    }
+
+    async escuchar() {
+        try {
+            await bd.conectar();
+
+            this.app.listen(this.puerto, () => {
+                console.log(`API Festivos iniciada en http://localhost:${this.puerto}`);
+            });
+        } catch (error) {
+            console.error('Error iniciando API Festivos:', error);
+            process.exit(1);
+        }
     }
 }
 
-iniciarAplicacion();
+module.exports = App;

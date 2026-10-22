@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /festivos/{anio}:
+ * /api/festivos/{anio}:
  *   get:
  *     summary: Consultar festivos de un año
  *     description: Obtiene los festivos de Colombia para el año indicado.
@@ -43,7 +43,7 @@
  */
 /**
  * @swagger
- * /festivos/verificar/{anio}/{mes}/{dia}:
+ * /api/festivos/verificar/{anio}/{mes}/{dia}:
  *   get:
  *     summary: Verificar si una fecha es festiva
  *     description: Consulta si una fecha determinada corresponde a un festivo en Colombia.
@@ -85,7 +85,7 @@
  */
 /**
  * @swagger
- * /festivos/{idTipo}:
+ * /api/festivos/{idTipo}:
  *   post:
  *     summary: Agregar un nuevo festivo
  *     description: Agrega un festivo al tipo indicado en MongoDB.
@@ -146,7 +146,7 @@
  */
 /**
  * @swagger
- * /festivos/{idTipo}/{nombre}:
+ * /api/festivos/{idTipo}/{nombre}:
  *   put:
  *     summary: Actualizar un festivo
  *     description: Modifica los datos de un festivo existente dentro del tipo indicado.
@@ -201,7 +201,7 @@
  */
 /**
  * @swagger
- * /festivos/{idTipo}/{nombre}:
+ * /api/festivos/{idTipo}/{nombre}:
  *   delete:
  *     summary: Eliminar un festivo
  *     description: Elimina un festivo del arreglo correspondiente al tipo indicado.
@@ -234,7 +234,7 @@
 
 /**
  * @swagger
- * /festivos/tipos:
+ * /api/festivos/tipos:
  *   get:
  *     summary: Consultar los tipos de festivo
  *     tags:
@@ -256,36 +256,36 @@ module.exports = (app) => {
     const festivoControlador = require('../controladores/festivo.controlador');
     const festivoValidador = require('../validadores/festivo.validador');
 
-    // La ruta fija debe declararse antes de /festivos/:anio.
-    app.get('/festivos/tipos', festivoControlador.listarTipos);
+    // La ruta fija debe declararse antes de /api/festivos/:anio.
+    app.get('/api/festivos/tipos', festivoControlador.listarTipos);
 
     app.get(
-        '/festivos/:anio',
+        '/api/festivos/:anio',
         festivoValidador.validarAnio,
         festivoControlador.listarPorAnio
     );
 
     app.get(
-        '/festivos/verificar/:anio/:mes/:dia',
+        '/api/festivos/verificar/:anio/:mes/:dia',
         festivoValidador.validarFecha,
         festivoControlador.verificarFestivo
     );
 
     app.post(
-    '/festivos/:idTipo',
+    '/api/festivos/:idTipo',
     festivoValidador.validarDatosFestivo,
     festivoControlador.agregarFestivo
     );
 
     app.put(
-        '/festivos/:idTipo/:nombre',
+        '/api/festivos/:idTipo/:nombre',
         festivoValidador.validarIdentificadorFestivo,
         festivoValidador.validarDatosFestivo,
         festivoControlador.actualizarFestivo
     );
 
     app.delete(
-        '/festivos/:idTipo/:nombre',
+        '/api/festivos/:idTipo/:nombre',
         festivoValidador.validarIdentificadorFestivo,
         festivoControlador.eliminarFestivo
     );

@@ -1,74 +1,68 @@
-const bd = require('../modelos/bd');
+const bd = require('./bd');
 
-async function listarTipos() {
-    const basedatos = bd.obtenerBaseDatos();
+class FestivoRepositorio {
 
-    return await basedatos
-        .collection('tipos')
-        .find({})
-        .sort({ id: 1 })
-        .toArray();
-}
+    static async listarTipos() {
+        const basedatos = bd.obtenerBaseDatos();
 
+        return await basedatos
+            .collection('tipos')
+            .find({})
+            .sort({ id: 1 })
+            .toArray();
+    }
 
-async function buscarTipoPorId(idTipo) {
-    const basedatos = bd.obtenerBaseDatos();
+    static async buscarTipoPorId(idTipo) {
+        const basedatos = bd.obtenerBaseDatos();
 
-    return await basedatos
-        .collection('tipos')
-        .findOne({ id: idTipo });
-}
+        return await basedatos
+            .collection('tipos')
+            .findOne({ id: idTipo });
+    }
 
-async function agregarFestivo(idTipo, festivo) {
-    const basedatos = bd.obtenerBaseDatos();
+    static async agregarFestivo(idTipo, festivo) {
+        const basedatos = bd.obtenerBaseDatos();
 
-    return await basedatos
-        .collection('tipos')
-        .updateOne(
-            { id: idTipo },
-            { $push: { festivos: festivo } }
-        );
-}
+        return await basedatos
+            .collection('tipos')
+            .updateOne(
+                { id: idTipo },
+                { $push: { festivos: festivo } }
+            );
+    }
 
+    static async actualizarFestivo(idTipo, nombreActual, festivo) {
+        const basedatos = bd.obtenerBaseDatos();
 
-async function actualizarFestivo(idTipo, nombreActual, festivo) {
-    const basedatos = bd.obtenerBaseDatos();
-
-    return await basedatos
-        .collection('tipos')
-        .updateOne(
-            {
-                id: idTipo,
-                'festivos.nombre': nombreActual
-            },
-            {
-                $set: {
-                    'festivos.$': festivo
+        return await basedatos
+            .collection('tipos')
+            .updateOne(
+                {
+                    id: idTipo,
+                    'festivos.nombre': nombreActual
+                },
+                {
+                    $set: {
+                        'festivos.$': festivo
+                    }
                 }
-            }
-        );
-}
+            );
+    }
 
-async function eliminarFestivo(idTipo, nombre) {
-    const basedatos = bd.obtenerBaseDatos();
+    static async eliminarFestivo(idTipo, nombre) {
+        const basedatos = bd.obtenerBaseDatos();
 
-    return await basedatos
-        .collection('tipos')
-        .updateOne(
-            { id: idTipo },
-            {
-                $pull: {
-                    festivos: { nombre: nombre }
+        return await basedatos
+            .collection('tipos')
+            .updateOne(
+                { id: idTipo },
+                {
+                    $pull: {
+                        festivos: { nombre: nombre }
+                    }
                 }
-            }
-        );
+            );
+    }
 }
 
-
-module.exports = {
-    listarTipos,
-    buscarTipoPorId,
-    agregarFestivo,
-    actualizarFestivo,
-    eliminarFestivo
-};
+module.exports = FestivoRepositorio;
